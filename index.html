@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<title>Henrys Lesecounter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: eine schmale Spalte. Heute oben, darunter der Klicker, dann die Statistik, ganz unten der Tarif. */
+:root {
+  --bg: #E8EDF4;
+  --surface: #F8FAFD;
+  --ink: #14213D;
+  --muted: #566684;
+  --line: #CBD5E4;
+  --accent: #F2B21B;
+  --on-accent: #14213D;
+  --accent-soft: #FBEBB8;
+  --danger: #B3261E;
+  --font-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0D1525;
+    --surface: #16223A;
+    --ink: #E9EFFA;
+    --muted: #9AAAC6;
+    --line: #2A3A58;
+    --accent-soft: #3A3014;
+    --danger: #FF8A80;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  padding-inline: 16px;
+  padding-block: max(24px, env(safe-area-inset-top, 0px)) max(40px, env(safe-area-inset-bottom, 0px));
+}
+main { max-width: 600px; margin-inline: auto; display: grid; gap: 16px; }
+main[hidden] { display: none; }
+h1, h2 { margin: 0; font-family: var(--font-display); text-wrap: balance; }
+h1 { font-size: 1.75rem; line-height: 1.1; }
+.eyebrow { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+
+.top { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 20px; display: grid; gap: 14px; }
+
+/* Heute */
+.today { display: grid; gap: 6px; padding: 8px 4px 0; }
+.today-main { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.big { font-family: var(--font-display); font-weight: 700; font-size: clamp(3.5rem, 18vw, 5.5rem); line-height: 1; letter-spacing: -0.02em; }
+.unit { font-family: var(--font-display); font-size: 1.5rem; color: var(--muted); }
+.today-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.chip { background: var(--accent); color: var(--on-accent); font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; padding: 4px 14px; border-radius: 999px; }
+.rate { color: var(--muted); font-size: 0.9375rem; }
+
+/* Buttons */
+button, select, input { font: inherit; }
+button {
+  cursor: pointer; color: var(--ink); background: transparent;
+  border: 1.5px solid var(--line); border-radius: 14px;
+  min-height: 48px; padding-inline: 14px;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+}
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+button:not(:disabled):active { transform: scale(0.98); }
+.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600; }
+.tap {
+  width: 100%; min-height: 112px; font-family: var(--font-display); font-weight: 700; font-size: 3rem;
+  background: var(--accent); color: var(--on-accent); border-color: var(--accent); border-radius: 18px;
+}
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; }
+.steps button { font-weight: 600; font-variant-numeric: tabular-nums; }
+.link-btn { min-height: 40px; border: none; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; padding-inline: 4px; }
+.custom { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.custom label { color: var(--muted); font-size: 0.9375rem; }
+input, select {
+  min-height: 48px; padding-inline: 12px; color: var(--ink); background: var(--bg);
+  border: 1.5px solid var(--line); border-radius: 12px; min-width: 0;
+}
+.custom input { width: 7.5rem; }
+.status { color: var(--muted); font-size: 0.875rem; min-height: 1.3em; }
+.status.err { color: var(--danger); }
+
+/* Statistik */
+.tabs { display: flex; gap: 8px; }
+.tabs button { flex: 1; min-height: 44px; font-weight: 600; }
+.tabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.summary { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; font-size: 0.9375rem; }
+.summary strong { font-family: var(--font-display); font-size: 1.25rem; }
+.chart { display: flex; align-items: flex-end; gap: 4px; height: 140px; border-bottom: 1.5px solid var(--line); padding-top: 8px; }
+.col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+.bar { width: 100%; background: var(--accent-soft); border-radius: 6px 6px 0 0; min-height: 2px; }
+.bar.has { background: var(--accent); }
+.col.now .bar { outline: 2px solid var(--ink); outline-offset: 1px; }
+.axis { display: flex; gap: 4px; margin-top: 4px; font-size: 0.6875rem; color: var(--muted); }
+.axis span { flex: 1; min-width: 0; text-align: center; overflow: hidden; }
+.chart-note { font-size: 0.8125rem; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+td.r, th.r { text-align: right; white-space: nowrap; }
+tr.now td { font-weight: 600; }
+.empty { border: 1.5px dashed var(--line); border-radius: 14px; padding: 14px 16px; color: var(--muted); }
+
+/* Tarif */
+details.card { padding: 0; }
+details summary { cursor: pointer; padding: 18px 20px; font-family: var(--font-display); font-weight: 700; font-size: 1.125rem; list-style-position: inside; }
+.tariff-body { padding: 0 20px 20px; display: grid; gap: 14px; }
+.field { display: grid; gap: 6px; }
+.field label { font-weight: 600; font-size: 0.9375rem; }
+.hint { font-size: 0.875rem; color: var(--muted); }
+
+/* Anmeldung und Einrichtung */
+.login { max-width: 420px; }
+.login form { display: grid; gap: 14px; }
+.box { border: 1.5px solid var(--danger); border-radius: 14px; padding: 14px 16px; }
+
+@keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.05); } 100% { transform: scale(1); } }
+.pop { animation: pop 0.18s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .pop { animation: none; }
+  button:not(:disabled):active { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hinweis, solange firebase-config.js noch Platzhalter enthält -->
+<main id="setup" hidden>
+  <h1>Henrys Lesecounter</h1>
+  <div class="box">
+    <strong>Die Firebase-Konfiguration fehlt.</strong>
+    <p>Trage die Werte deiner Firebase-Web-App in <code>firebase-config.js</code> ein. Die Schritte stehen in der README.</p>
+  </div>
+</main>
+
+<!-- Anmeldung -->
+<main id="login" class="login" hidden>
+  <header>
+    <span class="eyebrow">Familie</span>
+    <h1>Henrys Lesecounter</h1>
+  </header>
+  <form class="card" id="login-form">
+    <div class="field">
+      <label for="email">E-Mail</label>
+      <input id="email" type="email" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label for="password">Passwort</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+    </div>
+    <button class="primary" id="login-btn" type="submit">Anmelden</button>
+    <div class="status" id="login-status" role="alert"></div>
+  </form>
+</main>
+
+<!-- Haupt-App -->
+<main id="app" hidden>
+  <header class="top">
+    <div>
+      <span class="eyebrow">Lesecounter</span>
+      <h1>Henry</h1>
+    </div>
+    <button class="link-btn" id="signout" type="button">Abmelden</button>
+  </header>
+
+  <section class="today" aria-live="polite">
+    <span class="eyebrow">Heute</span>
+    <div class="today-main">
+      <span class="big num" id="today-qty">0</span>
+      <span class="unit" id="today-unit">Wörter</span>
+    </div>
+    <div class="today-line">
+      <span class="chip num" id="today-eur">0,00 €</span>
+      <span class="rate" id="rate-note"></span>
+    </div>
+    <div class="rate" id="today-other"></div>
+  </section>
+
+  <section class="card" aria-label="Klicker">
+    <button class="tap" id="tap" type="button" disabled>+1</button>
+    <div class="steps" id="steps"></div>
+    <form class="custom" id="custom-form">
+      <label for="custom">Menge</label>
+      <input id="custom" type="number" min="1" max="100000" step="1" inputmode="numeric" placeholder="z. B. 25">
+      <button id="custom-add" type="submit" disabled>Hinzufügen</button>
+    </form>
+    <div class="status" id="status" role="status"></div>
+  </section>
+
+  <section class="card" aria-labelledby="stats-title">
+    <h2 id="stats-title" class="eyebrow">Statistik</h2>
+    <div class="tabs" role="group" aria-label="Zeitraum">
+      <button type="button" data-mode="day" aria-pressed="true">Tag</button>
+      <button type="button" data-mode="week" aria-pressed="false">Woche</button>
+      <button type="button" data-mode="month" aria-pressed="false">Monat</button>
+    </div>
+    <div class="summary">
+      <span>Gesamt verdient <strong class="num" id="sum-eur">0,00 €</strong></span>
+      <span class="muted num" id="sum-qty">–</span>
+    </div>
+    <div>
+      <div class="chart" id="chart" aria-hidden="true"></div>
+      <div class="axis" id="axis" aria-hidden="true"></div>
+    </div>
+    <div class="chart-note"><span id="chart-title"></span><span class="num" id="chart-max"></span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Zeitraum</th><th>Gelesen</th><th class="r">Verdient</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <button type="button" id="more" hidden>Mehr anzeigen</button>
+  </section>
+
+  <details class="card" id="tariff-box">
+    <summary>Tarif einstellen</summary>
+    <form class="tariff-body" id="tariff-form">
+      <div class="field">
+        <label for="unit">Gezählt wird in</label>
+        <select id="unit"></select>
+      </div>
+      <div class="field">
+        <label for="rate">Cent pro Einheit</label>
+        <input id="rate" type="text" inputmode="decimal" autocomplete="off" required>
+        <span class="hint">Zum Beispiel 10 für 10 Cent oder 0,5 für einen halben Cent. 150 sind 1,50 €.</span>
+      </div>
+      <button class="primary" id="tariff-save" type="submit">Tarif speichern</button>
+      <div class="hint">Der neue Tarif gilt ab jetzt. Bereits verdientes Geld in der Statistik bleibt unverändert.</div>
+      <div class="status" id="tariff-status" role="status"></div>
+    </form>
+  </details>
+</main>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

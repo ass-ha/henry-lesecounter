@@ -1,0 +1,28 @@
+// Firestore-Regeln für Henrys Lesecounter
+// Abhängigkeiten: Firebase Authentication (E-Mail/Passwort), Sammlungen "days" und "settings"
+//
+// Nur die zwei eingetragenen E-Mail-Adressen dürfen lesen und schreiben.
+// Adressen bitte komplett kleingeschrieben eintragen.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function erlaubt() {
+      return request.auth != null
+        && request.auth.token.email in [
+          'deine-mail@example.com',
+          'mail-deines-mannes@example.com'
+        ];
+    }
+
+    // Ein Dokument pro Tag (ID = JJJJ-MM-TT)
+    match /days/{day} {
+      allow read, write: if erlaubt();
+    }
+
+    // Tarif (Einheit und Cent pro Einheit)
+    match /settings/{doc} {
+      allow read, write: if erlaubt();
+    }
+  }
+}
